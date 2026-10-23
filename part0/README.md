@@ -1,19 +1,21 @@
 # Part 0 Exercises
 
-## Exercise 0.4: New note diagram
+## 0.4: New note diagram
 
 ```mermaid
 sequenceDiagram
     participant browser
     participant server
 
-    Note right of browser: The user writes a note and clicks the Save button
-
-    browser->>server: POST https://helsinki.fi
+    Note right of browser: User enters text and clicks the Save button.
+    
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
-    Note left of server: The server extracts the data, saves the new note to the array, and prepares a redirect
-    server-->>browser: HTTP status code 302 (URL Redirect to /exampleapp/notes)
+    Note left of server: The server receives the form data and pushes it to the notes array.
+    server-->>browser: HTTP 302 Found (URL Redirect)
     deactivate server
+
+    Note right of browser: The redirect instructs the browser to reload the /notes page.
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
@@ -30,17 +32,17 @@ sequenceDiagram
     server-->>browser: the JavaScript file
     deactivate server
 
-    Note right of browser: The browser executes the JS code to fetch the updated JSON from the server
+    Note right of browser: The browser begins executing the JS code, triggering the data fetch.
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate server
-    server-->>browser: [{ "content": "Your new note", "date": "2026-10-23" }, ... ]
+    server-->>browser: [{ "content": "HTML is easy", "date": "2023-1-1" }, ... ]
     deactivate server
 
-    Note right of browser: The browser executes the callback function to render the updated notes list
+    Note right of browser: The callback function executes and renders the updated list of notes.
 ```
 
-## Exercise 0.5: Single page app diagram
+## 0.5: Single page app diagram
 
 ```mermaid
 sequenceDiagram
@@ -57,37 +59,38 @@ sequenceDiagram
     server-->>browser: the css file
     deactivate server
 
-    browser->>server: GET https://helsinki.fi
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
     activate server
     server-->>browser: the JavaScript file
     deactivate server
 
-    Note right of browser: The browser starts executing JS code which requests the JSON data
+    Note right of browser: The browser starts executing spa.js, which requests the JSON data.
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate server
-    server-->>browser: [{ "content": "spa note", "date": "2026-10-23" }, ... ]
+    server-->>browser: [{ "content": "HTML is easy", "date": "2023-1-1" }, ... ]
     deactivate server
 
-    Note right of browser: The browser renders the initial notes dynamically using JavaScript
+    Note right of browser: The callback executes, mapping through the array to render the notes to the DOM.
 ```
 
-## Exercise 0.6: New note in Single page app diagram
+## 0.6: New note in Single page app diagram
 
 ```mermaid
 sequenceDiagram
     participant browser
     participant server
 
-    Note right of browser: The user types a note and clicks Save
+    Note right of browser: User enters text and clicks Save.
+    Note right of browser: spa.js intercepts the form submission using e.preventDefault().
+    Note right of browser: The script creates a new note object, adds it to the local notes array, and re-renders the note list on the page immediately.
 
-    Note right of browser: The JS code intercepts the form submit, appends the note locally, and redraws the DOM instantly
-
-    browser->>server: POST https://helsinki.fi_spa
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
     activate server
-    Note over browser, server: Sends JSON data: { content: "single page note", date: "2026-10-23" }
-    server-->>browser: HTTP status code 201 (Created)
+    Note right of browser: The request contains the JSON payload containing the note content and timestamp.
+    Note left of server: The server receives the JSON, parses it, and adds it to its internal notes array.
+    server-->>browser: HTTP 201 Created
     deactivate server
-    
-    Note right of browser: No further data or page reload is requested; the UI is already updated
+
+    Note right of browser: No redirect occurs. The browser stays on the same page and no further HTTP requests are made.
 ```
